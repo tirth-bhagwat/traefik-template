@@ -1,0 +1,44 @@
+http:
+  routers:
+    prod:
+      rule: "Host(`example.com`) || Host(`www.example.com`)"
+      service: prod
+      entrypoints:
+        - websecure
+      tls: {}
+
+    dev:
+      rule: "Host(`dev.example.com`)"
+      service: dev
+      entrypoints:
+        - websecure
+      tls: {}
+
+  services:
+    prod:
+      loadBalancer:
+        servers:
+        - url: http://container-prod:80
+
+    dev:
+      loadBalancer:
+        servers:
+        - url: http://container-dev:80
+
+tls:
+  options:
+    default:
+      clientAuth:
+        caFiles:
+          - /etc/traefik/ssl/cloudflare.crt
+        clientAuthType: RequireAndVerifyClientCert
+  certificates:
+    default:
+      certFile: '/etc/traefik/ssl/cert.pem'
+      keyFile: '/etc/traefik/ssl/key.pem'
+  stores:
+    default:
+      defaultCertificate:
+        certfile: '/etc/traefik/ssl/cert.pem'
+        keyFile: '/etc/traefik/ssl/key.pem'
+
